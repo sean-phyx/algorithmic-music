@@ -1,5 +1,4 @@
 class ErrorReporter:
-
     def __init__(self, isEnabled):
         self.numerrs = 0
         self.errs = []
