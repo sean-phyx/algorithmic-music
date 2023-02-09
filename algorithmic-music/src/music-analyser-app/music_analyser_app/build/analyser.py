@@ -1,12 +1,24 @@
 import tkinter
 import tkinter.ttk
 import tkinter.messagebox
-from tkinter.filedialog import askopenfile 
+from tkinter.filedialog import askopenfile, askdirectory
 import customtkinter
 from translations import translations
 
+import os
+
+basedir = os.path.dirname(__file__)
+
+try:
+    from ctypes import windll  # Only exists on Windows.
+
+    myappid = "mycompany.myproduct.subproduct.version"
+    windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+except ImportError:
+    pass
+
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
-customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
+# customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 selectedlanguage = translations.eng
 
 class App(customtkinter.CTk):
@@ -14,7 +26,7 @@ class App(customtkinter.CTk):
         super().__init__()
 
         # configure window
-        iconIm = tkinter.PhotoImage(file = "C:\\Users\\armat\\Documents\\algorithmic-music\\algorithmic-music\\src\\music-analyser-app\\music_analyser_app\\build\\assets\\frame0\\app_icon.png")
+        iconIm = tkinter.PhotoImage(file = 'algorithmic-music/src/music-analyser-app/music_analyser_app/build/assets/frame0/app_icon.png')
         self.iconphoto(False, iconIm)
         self.title("Music Analyser")
         self.geometry(f"{1100}x{580}")
@@ -40,16 +52,32 @@ class App(customtkinter.CTk):
         self.main_app_frame.rowconfigure(tuple(range(0,10)), weight=1)
         self.main_app_frame.columnconfigure(tuple(range(0,10)), weight=1)
 
-        # create the upload section in the Sidebar
-        self.sidebar_upload_frame = customtkinter.CTkFrame(self.sidebar_frame, fg_color='#171717', corner_radius=3)
-        self.sidebar_upload_frame.grid(row=1, column=0, padx=10, pady=5)
-        self.sidebar_upload_frame.grid_rowconfigure(1, weight=1)
+        # create the main view tabs (tabview)
+        self.main_tab_view = customtkinter.CTkTabview(self.main_app_frame, fg_color=('#FFFFFF', '#000000'))
+        self.main_tab_view.grid(row=0, column=0, padx=(10, 0), pady=(0, 0), rowspan=9, columnspan=10, sticky="nsew")
+        self.main_tab_view.add(getlang('main_view_media'))
+        self.main_tab_view.add(getlang('main_view_edit'))
+        self.main_tab_view.add(getlang('main_view_settings'))
+
+        # configure the individual view grids
+        self.main_tab_view.tab(getlang('main_view_media')).grid_columnconfigure(tuple(range(0,10)), weight=1)
+        self.main_tab_view.tab(getlang('main_view_media')).grid_rowconfigure(tuple(range(0,15)), weight=1)
+
+        self.main_tab_view.tab(getlang('main_view_edit')).grid_columnconfigure(0, weight=1)
+
+        self.label_tab_2 = customtkinter.CTkLabel(self.main_tab_view.tab(getlang('main_view_edit')), text="CTkLabel on Tab 2")
+        self.label_tab_2.grid(row=0, column=0, padx=20, pady=20)
+
+        # create the upload section in the media view
+        self.sidebar_upload_frame = customtkinter.CTkFrame(self.main_tab_view.tab(getlang('main_view_media')), fg_color=('#FFFFFF', '#171717'), corner_radius=3)
+        self.sidebar_upload_frame.grid(row=15, column=10, padx=0, pady=0)
+        self.sidebar_upload_frame.grid_rowconfigure((0,1), weight=1)
 
         self.sidebar_upload_button = customtkinter.CTkButton(self.sidebar_upload_frame, command=self.open_file, text=getlang('file_upload_button'), corner_radius=3)
-        self.sidebar_upload_button.grid(row=1, column=0, padx=10, pady=5)
+        self.sidebar_upload_button.grid(row=0, column=0, padx=10, pady=5)
 
-        self.sidebar_upload_text = customtkinter.CTkLabel(self.sidebar_upload_frame, text=getlang('no_upload_text'), text_color=('#000000', '#FFFFFF'))
-        self.sidebar_upload_text.grid(row=2, column=0, padx=10, pady=5)
+        self.sidebar_folder_button = customtkinter.CTkButton(self.sidebar_upload_frame, command=self.open_folder, text=getlang('file_folder_button'), corner_radius=3)
+        self.sidebar_folder_button.grid(row=1, column=0, padx=10, pady=5)
 
         # create the buttons to perform functions in the sidebar
         self.sidebar_menu_frame = customtkinter.CTkFrame(self.sidebar_frame, fg_color='#171717')
@@ -61,25 +89,6 @@ class App(customtkinter.CTk):
         # grey out the button when a file is not selected || Move to the correct page.
         self.sidebar_generate_chroma_buton = customtkinter.CTkButton(self.sidebar_menu_frame, command=self.generate_chroma, text=getlang('generate_chroma_button'))
         self.sidebar_generate_chroma_buton.grid(row=1, column=0, padx=10, pady=5)
-
-
-        # create the main view tabs (tabview)
-        self.tabview = customtkinter.CTkTabview(self.main_app_frame, fg_color=('#FFFFFF', '#2B2B2B'))
-        self.tabview.grid(row=0, column=0, padx=(10, 0), pady=(0, 0), rowspan=9, columnspan=10, sticky="nsew")
-        self.tabview.add(getlang('tab_view_media'))
-        self.tabview.add("Tab 2")
-        self.tabview.add("Tab 3")
-        self.tabview.tab(getlang('tab_view_media')).grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
-        self.tabview.tab("Tab 2").grid_columnconfigure(0, weight=1)
-
-        self.optionmenu_1 = customtkinter.CTkOptionMenu(self.tabview.tab(getlang('tab_view_media')), dynamic_resizing=False,
-                                                        values=["Value 1", "Value 2", "Value Long Long Long"])
-        self.optionmenu_1.grid(row=0, column=0, padx=20, pady=(20, 10))
-        self.combobox_1 = customtkinter.CTkComboBox(self.tabview.tab(getlang('tab_view_media')),
-                                                    values=["Value 1", "Value 2", "Value Long....."])
-        self.combobox_1.grid(row=1, column=0, padx=20, pady=(10, 10))
-        self.label_tab_2 = customtkinter.CTkLabel(self.tabview.tab("Tab 2"), text="CTkLabel on Tab 2")
-        self.label_tab_2.grid(row=0, column=0, padx=20, pady=20)
 
         # create the application scaling and mode selections
         self.sidebar_appearance_frame = customtkinter.CTkFrame(self.sidebar_frame, fg_color=('#FFFFFF', '#171717'), corner_radius=3)
@@ -110,6 +119,12 @@ class App(customtkinter.CTk):
         file_name = file_path.name.split('/')
         file_name = file_name[-1]
         self.sidebar_upload_text.configure(text=file_name)
+
+    def open_folder(self):
+        folder_path = askdirectory(initialdir='~/Music')
+        for item in os.listdir(folder_path):
+            # TODO grab individual files and load them.
+            return
 
     def generate_chroma(self):
         return NotImplemented
