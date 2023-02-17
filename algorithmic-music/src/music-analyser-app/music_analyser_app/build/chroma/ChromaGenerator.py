@@ -1,20 +1,17 @@
+#%%
 import librosa as lr
+from librosa.display import specshow
 import os
 import soundfile as sf
 import numpy as np
 import subprocess
 import matplotlib.pyplot as plt
-
-def check_path(file_path):
-    for root, dirs, files in os.walk(file_path):
-        for file in files:
-            print(file)
     
 class ChromaGenerator:
-    def __init__(self, chroma_type, sample_rate, frame_size, hop_size):
-        self.chroma_type = chroma_type
+    def __init__(self, sample_rate, frame_size, hop_size):
         self.sample_rate = sample_rate
         self.frame_size = frame_size
+        self.duration = frame_size / sample_rate
         self.hop_size = hop_size
         self.chroma = None
         self.chroma_cq = None
@@ -30,7 +27,7 @@ class ChromaGenerator:
                 self.mp3_to_wav(file_path)
                 file_path = file_path.replace(".mp3", ".wav")
 
-        lr_audio, self.sample_rate = lr.load(file_path, sr=self.sample_rate)
+        lr_audio, self.sample_rate = lr.load(file_path, sr=self.sample_rate, duration=self.duration)
 
         self.chroma = lr.feature.chroma_stft(y=lr_audio, sr=self.sample_rate)
         self.chroma_cq = lr.feature.chroma_cqt(y=lr_audio, sr=self.sample_rate)
@@ -40,49 +37,18 @@ class ChromaGenerator:
     def mp3_to_wav(self, mp3_file_path):
         mp3_file_path_wav = mp3_file_path.replace(".mp3", ".wav")
         subprocess.call(['H:/algorithmic-music/algorithmic-music/algorithmic-music/ffmpeg-5.1.2-essentials_build/bin/ffmpeg.exe', '-i', mp3_file_path, mp3_file_path_wav, '-y'])
+    
+    def set_duration(self, duration):
+        self.duration = duration
 
-    def get_chroma(self):
-        return self.chroma
-    
-    def get_chroma_cq(self):
-        return self.chroma_cq
-    
-    def get_chroma_cens(self):
-        return self.chroma_cens
-    
-    def get_chroma_stft(self):
-        return self.chroma_stft
-    
-    def get_chroma_type(self):
-        return self.chroma_type
-    
-    def get_sample_rate(self):
-        return self.sample_rate
-    
-    def get_frame_size(self):
-        return self.frame_size
-    
-    def get_hop_size(self):
-        return self.hop_size
-
-    def display_chroma(self, chroma_type):
-        # TODO add logging
-        try:
-            if (chroma_type == "chroma"):
-                lr.display.specshow(self.chroma, y_axis='chroma', x_axis='time')
-            elif (chroma_type == "chroma_cq"):
-                lr.display.specshow(self.chroma_cq, y_axis='chroma', x_axis='time')
-            elif (chroma_type == "chroma_cens"):
-                lr.display.specshow(self.chroma_cens, y_axis='chroma', x_axis='time')
-            elif (chroma_type == "chroma_stft"):
-                lr.display.specshow(self.chroma_stft, y_axis='chroma', x_axis='time')
-            else:
-                print("Invalid chroma type")
-            plt.show()
-        except Exception as e:
-            # TODO: Add logging
-            return
+    def display_chroma(self, chroma):
+        fig, ax = plt.subplots()
+        fig.set_size_inches(24, 12)
+        img = specshow(chroma, ax=ax)
+        fig.colorbar(img, ax=ax)
         
-chroma = ChromaGenerator("chroma", 22050, 2048, 512)
+chroma = ChromaGenerator(22050, 2048, 512)
+chroma.set_duration(2)
 chroma.generate_chroma('H:/algorithmic-music/algorithmic-music/algorithmic-music/example_files/beethovenfifth.mp3')
-chroma.display_chroma("chroma")
+chroma.display_chroma(chroma.chroma_stft)
+# %%

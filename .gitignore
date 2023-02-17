@@ -138,3 +138,5 @@ required/
 
 ./build/
 dist/
+
+*.wav
