@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+*ffmpeg-5.1.2*
+
 # C extensions
 *.so
 
