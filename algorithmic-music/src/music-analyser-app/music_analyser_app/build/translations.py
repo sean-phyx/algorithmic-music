@@ -9,3 +9,7 @@ class translations:
         'main_view_settings': 'Settings',
         'file_folder_button' : 'Import Folder',
     }
+
+    fr = {
+        'file_upload_button' : 'Oui oui'
+    }

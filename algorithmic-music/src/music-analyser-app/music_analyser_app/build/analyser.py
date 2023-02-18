@@ -4,7 +4,7 @@ import tkinter.messagebox
 from tkinter.filedialog import askopenfile, askdirectory
 import customtkinter
 from translations import translations
-
+from debug.appdebugger import AppDebugger
 import os
 
 basedir = os.path.dirname(__file__)
@@ -24,6 +24,8 @@ selectedlanguage = translations.eng
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
+        self.debugger = AppDebugger.instance()
+        self.debugger.log('initialising app gui')
 
         # configure window
         iconIm = tkinter.PhotoImage(file = 'algorithmic-music/src/music-analyser-app/music_analyser_app/build/assets/frame0/app_icon.png')
@@ -140,11 +142,16 @@ class App(customtkinter.CTk):
 
 def getlang(texttoget):
     try:
-        return selectedlanguage.get(texttoget)
-    except:
+        if (not selectedlanguage.get(texttoget) == None):
+            return selectedlanguage.get(texttoget)
+        debug = AppDebugger.instance()
+        debug.error(f'Language has no translation for {texttoget}')
+        return translations.eng.get(texttoget)
+    except Exception as err:
         # TODO ERROR REPORTING 
         # with the ErrorReporter.
-        return
+        debug = AppDebugger.instance()
+        debug.error(err)
         
 if __name__ == "__main__":
     app = App()
