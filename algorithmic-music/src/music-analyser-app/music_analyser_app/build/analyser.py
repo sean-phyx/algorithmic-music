@@ -138,8 +138,6 @@ class App(customtkinter.CTk):
         new_scaling_float = int(new_scaling.replace("%", "")) / 100
         customtkinter.set_widget_scaling(new_scaling_float)
 
-
-
 def getlang(texttoget):
     try:
         if (not selectedlanguage.get(texttoget) == None):
