@@ -11,6 +11,9 @@ class AppDebugger:
     def log(self, message):
         print(Fore.WHITE, f'[DEBUG/Music Analyser] {message}')
 
+    def warn(self, warning):
+        print(Fore.YELLOW, f'[WARN/Music Analyser] {warning}', Fore.WHITE)
+
     def error(self, error):
         self.errorReporter.addError(error)
         print(Fore.RED, f'[ERROR/Music Analyser] {error}', Fore.WHITE)

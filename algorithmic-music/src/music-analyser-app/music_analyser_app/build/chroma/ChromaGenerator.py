@@ -8,11 +8,11 @@ import subprocess
 import matplotlib.pyplot as plt
     
 class ChromaGenerator:
-    def __init__(self, sample_rate, frame_size, hop_size):
-        self.sample_rate = sample_rate
-        self.frame_size = frame_size
-        self.duration = frame_size / sample_rate
-        self.hop_size = hop_size
+    def __init__(self):
+        self.sample_rate = None
+        self.frame_size = None
+        self.duration = None
+        self.hop_size = None
         self.chroma_cq = None
         self.chroma_cens = None
         self.chroma_stft = None
@@ -26,11 +26,13 @@ class ChromaGenerator:
                 self.mp3_to_wav(file_path)
                 file_path = file_path.replace(".mp3", ".wav")
 
-        lr_audio, self.sample_rate = lr.load(file_path, sr=self.sample_rate, duration=self.duration)
+        lr_audio, self.sample_rate = lr.load(file_path, sr=self.sample_rate)
+        lr_audio_mono = lr.to_mono(lr_audio)
+        self.duration = lr.get_duration(y=lr_audio_mono, sr = self.sample_rate)
 
-        self.chroma_cq = lr.feature.chroma_cqt(y=lr_audio, sr=self.sample_rate)
-        self.chroma_cens = lr.feature.chroma_cens(y=lr_audio, sr=self.sample_rate)
-        self.chroma_stft = lr.feature.chroma_stft(y=lr_audio, sr=self.sample_rate)
+        self.chroma_cq = lr.feature.chroma_cqt(y=lr_audio_mono, sr=self.sample_rate)
+        self.chroma_cens = lr.feature.chroma_cens(y=lr_audio_mono, sr=self.sample_rate)
+        self.chroma_stft = lr.feature.chroma_stft(y=lr_audio_mono, sr=self.sample_rate)
 
     def mp3_to_wav(self, mp3_file_path):
         mp3_file_path_wav = mp3_file_path.replace(".mp3", ".wav")
@@ -46,20 +48,18 @@ class ChromaGenerator:
         fig.colorbar(img, ax=ax)
 
     def save_chroma(self, chroma, file_path):
-        plt.figure(figsize=(24,8))
-        timestamps = lr.frames_to_time(range(len(chroma[0])), sr=self.sample_rate)
+        file_path = file_path.replace(".mp3", ".png")
+        plt.figure(figsize=(self.duration/4,20))
         specshow(chroma, y_axis='chroma', x_axis='time')
         plt.colorbar()
-        xticks = np.arange(0, timestamps[-1], 1)
-        plt.xticks(xticks, rotation=90)
         plt.yticks(range(12), ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'])
         plt.tight_layout()
         plt.savefig(file_path, bbox_inches='tight', pad_inches=0, dpi=300)
         
-chroma = ChromaGenerator(22050, 2048, 512)
-chroma.set_duration(5)
-print(os.path.isfile('C:/Users/armat/Documents/algorithmic-music/algorithmic-music/example_files/beethovenfifth.mp3'))
-chroma.generate_chroma('C:/Users/armat/Documents/algorithmic-music/algorithmic-music/example_files/beethovenfifth.mp3')
+# chroma = ChromaGenerator(22050, 2048, 512)
+# chroma.set_duration(5)
+# print(os.path.isfile('C:/Users/armat/Documents/algorithmic-music/algorithmic-music/example_files/beethovenfifth.mp3'))
+# chroma.generate_chroma('C:/Users/armat/Documents/algorithmic-music/algorithmic-music/example_files/beethovenfifth.mp3')
 # chroma.display_chroma(chroma.chroma_cq)
-chroma.save_chroma(chroma.chroma_cq, 'C:/Users/armat/Documents/algorithmic-music/algorithmic-music/example_files/beethovenfifth.png')
+# chroma.save_chroma(chroma.chroma_cq, 'C:/Users/armat/Documents/algorithmic-music/algorithmic-music/example_files/beethovenfifth.png')
 # %%
