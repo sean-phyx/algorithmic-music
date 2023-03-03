@@ -7,7 +7,6 @@ from translations import translations
 from debug.appdebugger import AppDebugger
 from chroma.ChromaGenerator import ChromaGenerator
 import threading
-import time
 import os
 
 basedir = os.path.dirname(__file__)

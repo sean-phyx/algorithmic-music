@@ -2,8 +2,6 @@
 import librosa as lr
 from librosa.display import specshow
 import os
-import soundfile as sf
-import numpy as np
 import subprocess
 import matplotlib.pyplot as plt
     
@@ -28,7 +26,7 @@ class ChromaGenerator:
 
         lr_audio, self.sample_rate = lr.load(file_path, sr=self.sample_rate)
         lr_audio_mono = lr.to_mono(lr_audio)
-        self.duration = lr.get_duration(y=lr_audio_mono, sr = self.sample_rate)
+        # self.duration = lr.get_duration(y=lr_audio_mono, sr = self.sample_rate)
 
         self.chroma_cq = lr.feature.chroma_cqt(y=lr_audio_mono, sr=self.sample_rate)
         self.chroma_cens = lr.feature.chroma_cens(y=lr_audio_mono, sr=self.sample_rate)
@@ -56,8 +54,8 @@ class ChromaGenerator:
         plt.tight_layout()
         plt.savefig(file_path, bbox_inches='tight', pad_inches=0, dpi=300)
         
-# chroma = ChromaGenerator(22050, 2048, 512)
-# chroma.set_duration(5)
+# chroma = ChromaGenerator()
+# chroma.set_duration(1)
 # print(os.path.isfile('C:/Users/armat/Documents/algorithmic-music/algorithmic-music/example_files/beethovenfifth.mp3'))
 # chroma.generate_chroma('C:/Users/armat/Documents/algorithmic-music/algorithmic-music/example_files/beethovenfifth.mp3')
 # chroma.display_chroma(chroma.chroma_cq)

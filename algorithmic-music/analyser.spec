@@ -5,10 +5,10 @@ block_cipher = None
 
 
 a = Analysis(
-    ['algorithmic-music\\src\\music-analyser-app\\music_analyser_app\\build\\analyser.py'],
+    ['src\\music-analyser-app\\music_analyser_app\\build\\analyser.py'],
     pathex=[],
     binaries=[],
-    datas=[('algorithmic-music\\src\\music-analyser-app\\music_analyser_app\\build\\assets\\frame0\\', '.\\algorithmic-music\\src\\music-analyser-app\\music_analyser_app\\build\\assets\\frame0\\'), ('C:\\Users\\armat\\Documents\\algorithmic-music\\algorithmic-music\\required\\customtkinter', '.\\customtkinter')],
+    datas=[('src\\music-analyser-app\\music_analyser_app\\build\\assets\\frame0\\', '.\\src\\music-analyser-app\\music_analyser_app\\build\\assets\\frame0\\'), ('C:\\Users\\armat\\Documents\\algorithmic-music\\algorithmic-music\\required\\customtkinter', '.\\customtkinter')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -27,7 +27,7 @@ exe = EXE(
     [],
     exclude_binaries=True,
     name='Chord Analyser',
-    datas=[('algorithmic-music\\src\\music-analyser-app\\music_analyser_app\\build\\assets\\frame0\\', '.'), ('C:\\Users\\armat\\Documents\\algorithmic-music\\algorithmic-music\\required\\customtkinter', '.\\customtkinter')],
+    datas=[('src\\music-analyser-app\\music_analyser_app\\build\\assets\\frame0\\', '.'), ('C:\\Users\\armat\\Documents\\algorithmic-music\\algorithmic-music\\required\\customtkinter', '.\\customtkinter')],
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -38,7 +38,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='algorithmic-music/src/music-analyser-app/music_analyser_app/build/assets/frame0/app_icon.png'
+    icon='src/music-analyser-app/music_analyser_app/build/assets/frame0/app_icon.png'
 )
 coll = COLLECT(
     exe,
